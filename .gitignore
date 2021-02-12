@@ -1,0 +1,5 @@
+.ipynb_checkpoints
+code/__pycache__/
+StormlightArchiveBooks/*.pdf
+StormlightArchiveBooks/Azw3Format
+.DS_Store
