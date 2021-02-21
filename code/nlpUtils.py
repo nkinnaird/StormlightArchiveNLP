@@ -19,6 +19,8 @@ import matplotlib.pyplot as plt
 # add additional stop words
 additional_stop_words = ['like', 'said', 'would', 'could', 'should', 'one']
 my_stop_words = stop_words.union(additional_stop_words)
+# name_words = ['kaladin', 'kal', 'dalinar', 'adolin', 'shallan', 'venli', 'eshonai', 'raboniel', 'navani', 'teft', 'rock', 'rlain', 'szeth', 'taravangian', 'lirin', 'jasnah', 'veil']
+# my_stop_words = my_stop_words.union(name_words)
 
 
 # get counts and remove stop words
