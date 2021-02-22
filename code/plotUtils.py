@@ -7,15 +7,48 @@ import numpy as np
 from sklearn.manifold import MDS, TSNE
 from sklearn.metrics.pairwise import cosine_similarity, cosine_distances
 
+consistent_colors = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf"]
 
-def getClusterCounts(df_with_results, cluster_top_words, bookNum):
+# use this function to make the colors consistent across various plots - colors will grab by index from the default colors
+def getPalette(uniqueVals):
     
-    # could pass in a string for which model to make plots for
+    grabbed_colors = [consistent_colors[index] for index in uniqueVals]
+    print(grabbed_colors)
+    
+    customPalette = sns.set_palette(sns.color_palette(grabbed_colors))
+    
+    return customPalette
+
+
+# plot number of counts in each cluster against booknum
+def getClusterCounts(df_with_results, top_words, bookNum):
+            
+    fig, ax = plt.subplots()
+#     sns.countplot(x='kMeans', data=df_with_results)
+    sns.countplot(x='kMeans', data=df_with_results.sort_values(by='kMeans'), palette=getPalette(df_with_results['kMeans'].sort_values().unique())) # sort kMeans column by value in order to plot names and colors consistently
+        
+    labels = [top_words[int(item.get_text())] for item in ax.get_xticklabels()]
+    ax.set_xticklabels(labels)
+    
+    if bookNum == 0:
+        plt.title("All Books")
+    else:
+        plt.title(f"Book {bookNum}")
+    
+    plt.show()
+    
+    
+# plot number of counts in each topic (max value) against booknum
+def getNMFCounts(df_with_results, top_words, bookNum):
+    
     
     fig, ax = plt.subplots()
-    sns.countplot(x='kMeans', data=df_with_results)
+    
+    xs = [np.asarray(values).argmax() for values in df_with_results['NMF']]
+    
+    sns.countplot(x=xs)#, data=df_with_results)
         
-    labels = [cluster_top_words[int(item.get_text())] for item in ax.get_xticklabels()]
+    labels = [top_words[int(item.get_text())] for item in ax.get_xticklabels()]
     ax.set_xticklabels(labels)
     
     if bookNum == 0:
@@ -63,9 +96,9 @@ def makeMDSPlot(vectorized_matrix, df_with_results):
     plt.show()
     
     
-def makeTSNEPlot(vectorized_matrix, df_with_results):
+def makeTSNEPlot(vectorized_matrix, df_with_results, inputPerplexity=50):
     
-    tsne = TSNE(n_components=2, verbose=1, perplexity=50, n_iter=1000, learning_rate=200, random_state=6321)
+    tsne = TSNE(n_components=2, verbose=1, perplexity=inputPerplexity, n_iter=1000, learning_rate=200, random_state=6321)
     tsne_results = tsne.fit_transform(vectorized_matrix)
     
     df_tsne = pd.DataFrame(tsne_results, columns=['comp1', 'comp2'])

@@ -48,16 +48,17 @@ def doNMF(numTopics, vectorized_matrix, vectorizer):
     words = vectorizer.get_feature_names()
     top_topic_words = [[words[word_id] for word_id in topicNum] for topicNum in top_word_ids]
     
-    
-    
+    top_word_each_topic = []
+
     print('\nNMF Topic Words:')
     for i in range(numTopics):
         print("Topic %d:" % i, end='')
-        for word in top_topic_words[i]:
+        for j, word in enumerate(top_topic_words[i]):
             print(' %s' % word, end='')
+            if j == 0 : top_word_each_topic.append(word)
         print()
         
-    return doc_topic_matrix
+    return doc_topic_matrix, top_word_each_topic
 
     
 def dokMeans(numClusters, vectorized_matrix, vectorizer):
@@ -68,17 +69,17 @@ def dokMeans(numClusters, vectorized_matrix, vectorizer):
     order_centroids = km.cluster_centers_.argsort()[:,::-1]
     words = vectorizer.get_feature_names()
     
-    cluster_top_words = []
+    top_word_each_cluster = []
         
     print('\nkMeans Cluster Words:')
     for i in range(numClusters):
         print("Cluster %d:" % i, end='')
         for j, ind in enumerate(order_centroids[i, :6]):
             print(' %s' % words[ind], end='')
-            if j == 0: cluster_top_words.append(words[ind])
+            if j == 0: top_word_each_cluster.append(words[ind])
         print()
         
-    return doc_clusters, cluster_top_words
+    return doc_clusters, top_word_each_cluster
 
 
 def doLDA(numTopics, vectorized_matrix, vectorizer):
