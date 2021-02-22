@@ -7,27 +7,27 @@ import numpy as np
 from sklearn.manifold import MDS, TSNE
 from sklearn.metrics.pairwise import cosine_similarity, cosine_distances
 
-consistent_colors = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf"]
+names_to_colors = [('kaladin', "#1f77b4"), ('shallan', "#ff7f0e"), ('dalinar', "#2ca02c"), ('venli', "#d62728"), ('navani', "#9467bd"), ('adolin', "#8c564b"), ('szeth', "#e377c2"), ('other_1', "#7f7f7f"), ('other_2', "#bcbd22"), ('other_3', "#17becf")]
+color_dict = dict(names_to_colors)
+
 
 # use this function to make the colors consistent across various plots - colors will grab by index from the default colors
-def getPalette(uniqueVals):
+def getPalette(labels):
     
-    grabbed_colors = [consistent_colors[index] for index in uniqueVals]
-    print(grabbed_colors)
-    
+    grabbed_colors = [color_dict[label] for label in labels]    
     customPalette = sns.set_palette(sns.color_palette(grabbed_colors))
-    
     return customPalette
 
 
 # plot number of counts in each cluster against booknum
 def getClusterCounts(df_with_results, top_words, bookNum):
+    
+    unique_cluster_values = df_with_results['kMeans'].sort_values().unique()
+    labels = [top_words[item] for item in unique_cluster_values]
             
     fig, ax = plt.subplots()
-#     sns.countplot(x='kMeans', data=df_with_results)
-    sns.countplot(x='kMeans', data=df_with_results.sort_values(by='kMeans'), palette=getPalette(df_with_results['kMeans'].sort_values().unique())) # sort kMeans column by value in order to plot names and colors consistently
+    sns.countplot(x='kMeans', data=df_with_results.sort_values(by='kMeans'), palette=getPalette(labels)) # sort kMeans column by value in order to plot names and colors consistently
         
-    labels = [top_words[int(item.get_text())] for item in ax.get_xticklabels()]
     ax.set_xticklabels(labels)
     
     if bookNum == 0:
@@ -41,21 +41,21 @@ def getClusterCounts(df_with_results, top_words, bookNum):
 # plot number of counts in each topic (max value) against booknum
 def getNMFCounts(df_with_results, top_words, bookNum):
     
-    
-    fig, ax = plt.subplots()
-    
     xs = [np.asarray(values).argmax() for values in df_with_results['NMF']]
+    xs.sort()
     
-    sns.countplot(x=xs)#, data=df_with_results)
+    labels = [top_words[item] for item in set(xs)]
+
+    fig, ax = plt.subplots()        
+    sns.countplot(x=xs, palette=getPalette(labels))
         
-    labels = [top_words[int(item.get_text())] for item in ax.get_xticklabels()]
     ax.set_xticklabels(labels)
     
     if bookNum == 0:
         plt.title("All Books")
     else:
         plt.title(f"Book {bookNum}")
-    
+            
     plt.show()
 
 
@@ -83,7 +83,7 @@ def getNMFCounts(df_with_results, top_words, bookNum):
 
 def makeMDSPlot(vectorized_matrix, df_with_results):
 
-    distances  = cosine_distances(vectorized_matrix)
+    distances = cosine_distances(vectorized_matrix)
     
     mds = MDS(n_components=2, dissimilarity="precomputed", random_state=232, max_iter=300, verbose=1)
     positions_2d = mds.fit_transform(distances)
