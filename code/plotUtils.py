@@ -8,6 +8,24 @@ from sklearn.manifold import MDS, TSNE
 from sklearn.metrics.pairwise import cosine_similarity, cosine_distances
 
 
+def getClusterCounts(df_with_results, cluster_top_words, bookNum):
+    
+    # could pass in a string for which model to make plots for
+    
+    fig, ax = plt.subplots()
+    sns.countplot(x='kMeans', data=df_with_results)
+        
+    labels = [cluster_top_words[int(item.get_text())] for item in ax.get_xticklabels()]
+    ax.set_xticklabels(labels)
+    
+    if bookNum == 0:
+        plt.title("All Books")
+    else:
+        plt.title(f"Book {bookNum}")
+    
+    plt.show()
+
+
 # def makeMDSPlot(vectorized_matrix):
 
 #     distances  = cosine_distances(vectorized_matrix)
