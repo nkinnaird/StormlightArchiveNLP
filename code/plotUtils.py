@@ -67,6 +67,7 @@ def getNMFCounts(df_with_results, top_words, bookNum):
     plt.show()
     
 
+# make MDS plot using vectorized matrix directly
 def makeMDSPlot(vectorized_matrix, df_with_results, top_words):
 
     distances = cosine_distances(vectorized_matrix)
@@ -75,31 +76,58 @@ def makeMDSPlot(vectorized_matrix, df_with_results, top_words):
     positions_2d = mds.fit_transform(distances)
 #     print('Final stress value: %f' %mds.stress_)
 
-    df_temp = pd.DataFrame(positions_2d, columns=['comp1', 'comp2'])
+    df_temp = pd.DataFrame(positions_2d, columns=['MDS Axis 1', 'MDS Axis 2'])
     df_temp['Cluster'] = df_with_results['kMeans']
     df_temp['Label'] = df_temp['Cluster'].apply(lambda row: top_words[row])    
     
     labels = [top_words[item] for item in list(df_temp['Cluster'].sort_values().unique())]
     
-    sns.lmplot(x='comp1', y='comp2', data=df_temp.sort_values(by='Cluster'), hue='Label', palette=getPalette(labels), fit_reg=False)
+    sns.lmplot(x='MDS Axis 1', y='MDS Axis 2', data=df_temp.sort_values(by='Cluster'), hue='Label', palette=getPalette(labels), fit_reg=False)
 
+    plt.title("MDS All Books kMeans")
     plt.show()
     
-    
+
+# make tSNE plot using vectorized matrix directly for kMeans results
 def makeTSNEPlot(vectorized_matrix, df_with_results, top_words, inputPerplexity=50):
     
+#     distances = cosine_distances(vectorized_matrix)
+
     tsne = TSNE(n_components=2, verbose=1, perplexity=inputPerplexity, n_iter=1000, learning_rate=200, random_state=6321)
     tsne_results = tsne.fit_transform(vectorized_matrix)
+#     tsne_results = tsne.fit_transform(distances)
     
-    df_tsne = pd.DataFrame(tsne_results, columns=['comp1', 'comp2'])
+    df_tsne = pd.DataFrame(tsne_results, columns=['tSNE Axis 1', 'tSNE Axis 2'])
     df_tsne['Cluster'] = df_with_results['kMeans']
     df_tsne['Label'] = df_tsne['Cluster'].apply(lambda row: top_words[row])
 
     labels = [top_words[item] for item in list(df_tsne['Cluster'].sort_values().unique())]
     
-    print(labels)
+    sns.lmplot(x='tSNE Axis 1', y='tSNE Axis 2', data=df_tsne.sort_values(by='Cluster'), hue='Label', palette=getPalette(labels), fit_reg=False)
 
-    sns.lmplot(x='comp1', y='comp2', data=df_tsne.sort_values(by='Cluster'), hue='Label', palette=getPalette(labels), fit_reg=False)
-
+    plt.title("tSNE All Books kMeans")
     plt.show()
     
+
+# make tSNE plot using nmf topic vectors for each document, and using cosine distances in order to calculate the similarities
+def makeTSNEPlotFromNMF(vectorized_matrix, df_with_results, top_words, inputPerplexity=50):
+
+    nmf_topic_vectors_2d = np.stack(df_with_results['NMF'].to_numpy(), axis=0)
+    distances = cosine_distances(nmf_topic_vectors_2d)
+
+    tsne = TSNE(n_components=2, verbose=1, perplexity=inputPerplexity, n_iter=1000, learning_rate=200, random_state=6321)
+    tsne_results = tsne.fit_transform(distances)
+    
+    df_tsne = pd.DataFrame(tsne_results, columns=['tSNE Axis 1', 'tSNE Axis 2'])
+    df_tsne['Topic'] = pd.Series([np.asarray(values).argmax() for values in df_with_results['NMF']]) # get best topic    
+    df_tsne['Label'] = df_tsne['Topic'].apply(lambda row: top_words[row]) # find label for best topic
+
+    labels = [top_words[item] for item in list(df_tsne['Topic'].sort_values().unique())]
+    
+    print(labels)
+    print(df_tsne.head())
+    
+    sns.lmplot(x='tSNE Axis 1', y='tSNE Axis 2', data=df_tsne.sort_values(by='Topic'), hue='Label', palette=getPalette(labels), fit_reg=False)
+
+    plt.title("tSNE All Books NMF")
+    plt.show()
