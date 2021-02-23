@@ -45,14 +45,12 @@ def getClusterCounts(df_with_results, top_words, bookNum):
     
 # plot number of counts in each topic (max value) against booknum
 def getNMFCounts(df_with_results, top_words, bookNum):
-    
-    xs = [np.asarray(values).argmax() for values in df_with_results['NMF']]
-    xs.sort()
-    
-    labels = [top_words[item] for item in set(xs)]
+
+    unique_topic_values = df_with_results['NMF_Top_Topic'].sort_values().unique()
+    labels = [top_words[item] for item in unique_topic_values]
 
     fig, ax = plt.subplots()        
-    sns.countplot(x=xs, palette=getPalette(labels))
+    sns.countplot(x='NMF_Top_Topic', data=df_with_results.sort_values(by='NMF_Top_Topic'), palette=getPalette(labels)) # sort NMF top topic column by value in order to plot names and colors consistently
         
     ax.set_xticklabels(labels)
     
@@ -65,6 +63,31 @@ def getNMFCounts(df_with_results, top_words, bookNum):
     plt.xlabel("Character Topic")
             
     plt.show()
+    
+    
+    
+# # plot number of counts in each topic (max value) against booknum - this function without the NMF top topic columns in the dataframe
+# def getNMFCounts(df_with_results, top_words, bookNum):
+    
+#     xs = [np.asarray(values).argmax() for values in df_with_results['NMF']]
+#     xs.sort()
+    
+#     labels = [top_words[item] for item in set(xs)]
+
+#     fig, ax = plt.subplots()        
+#     sns.countplot(x=xs, palette=getPalette(labels))
+        
+#     ax.set_xticklabels(labels)
+    
+#     if bookNum == 0:
+#         plt.title("All Books NMF")
+#     else:
+#         plt.title(f"Book {bookNum} NMF")
+        
+#     plt.ylabel("Number of Chapters")
+#     plt.xlabel("Character Topic")
+            
+#     plt.show()
     
 
 # make MDS plot using vectorized matrix directly
@@ -119,7 +142,8 @@ def makeTSNEPlotFromNMF(vectorized_matrix, df_with_results, top_words, inputPerp
     tsne_results = tsne.fit_transform(distances)
     
     df_tsne = pd.DataFrame(tsne_results, columns=['tSNE Axis 1', 'tSNE Axis 2'])
-    df_tsne['Topic'] = pd.Series([np.asarray(values).argmax() for values in df_with_results['NMF']]) # get best topic    
+#     df_tsne['Topic'] = pd.Series([np.asarray(values).argmax() for values in df_with_results['NMF']]) # get best topic    
+    df_tsne['Topic'] = df_with_results['NMF_Top_Topic'] # get best topic    
     df_tsne['Label'] = df_tsne['Topic'].apply(lambda row: top_words[row]) # find label for best topic
 
     labels = [top_words[item] for item in list(df_tsne['Topic'].sort_values().unique())]
