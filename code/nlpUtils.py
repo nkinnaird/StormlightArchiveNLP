@@ -50,6 +50,25 @@ def vectorizeTextIDF(inputText, min_df=1, max_df=1.0, dropNameWords=False):
     
     return X_tfidf, cv_tfidf
 
+
+# make dictionaries from NMF topic word matrices for word cloud plotting
+def getNMF_TopicWord_Dicts(topic_word_matrix, vectorizer):
+    
+    words = vectorizer.get_feature_names()
+
+    list_of_dicts = []
+    
+    for t in topic_word_matrix:     
+        topic_dict = dict()
+        
+        for word_id, value in enumerate(t):
+            topic_dict[words[word_id]] = value
+        
+        list_of_dicts.append(topic_dict)
+                        
+    return list_of_dicts
+    
+    
 def doNMF(numTopics, vectorized_matrix, vectorizer):
     
     nmf_model = NMF(numTopics, max_iter=300, random_state=84597)
@@ -57,6 +76,10 @@ def doNMF(numTopics, vectorized_matrix, vectorizer):
 
     topic_word_matrix = nmf_model.components_
     top_word_ids = topic_word_matrix.argsort(axis=1)[:,-1:-7:-1]
+    
+#     print(type(topic_word_matrix))
+#     print(topic_word_matrix.shape)
+#     print(topic_word_matrix)
 
     words = vectorizer.get_feature_names()
     top_topic_words = [[words[word_id] for word_id in topicNum] for topicNum in top_word_ids]
@@ -71,7 +94,7 @@ def doNMF(numTopics, vectorized_matrix, vectorizer):
             if j == 0 : top_word_each_topic.append(word)
         print()
         
-    return doc_topic_matrix, top_word_each_topic
+    return doc_topic_matrix, topic_word_matrix, top_word_each_topic
 
     
 def dokMeans(numClusters, vectorized_matrix, vectorizer):

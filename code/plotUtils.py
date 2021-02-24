@@ -7,6 +7,8 @@ import numpy as np
 from sklearn.manifold import MDS, TSNE
 from sklearn.metrics.pairwise import cosine_similarity, cosine_distances
 
+from wordcloud import WordCloud
+
 names_to_colors = [('kaladin', "#1f77b4"), ('shallan', "#ff7f0e"), ('dalinar', "#2ca02c"), ('venli', "#d62728"), ('navani', "#9467bd"), 
                    ('adolin', "#8c564b"), ('szeth', "#e377c2"), ('veil', "#7f7f7f"), ('kal', "#bcbd22"), ('eshonai', "#17becf"),
                    ('taravangian', "#e377c2"), ('lirin', "#bcbd22")] # szeth-taravangian the same color, lirin-kal the same color
@@ -148,10 +150,23 @@ def makeTSNEPlotFromNMF(vectorized_matrix, df_with_results, top_words, inputPerp
 
     labels = [top_words[item] for item in list(df_tsne['Topic'].sort_values().unique())]
     
-    print(labels)
-    print(df_tsne.head())
-    
     sns.lmplot(x='tSNE Axis 1', y='tSNE Axis 2', data=df_tsne.sort_values(by='Topic'), hue='Label', palette=getPalette(labels), fit_reg=False)
 
     plt.title("tSNE All Books NMF")
     plt.show()
+    
+    
+# make word cloud plot from NMF results
+def makeWordCloudPlot(word_dict):
+    
+    wc = WordCloud(background_color="white", max_words=100)#, mask=alice_mask)
+    
+    wc.generate_from_frequencies(word_dict)
+
+    plt.imshow(wc, interpolation="bilinear")
+    plt.axis("off")
+    plt.show()
+    
+    
+    
+    
