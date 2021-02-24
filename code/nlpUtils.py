@@ -17,29 +17,42 @@ from gensim import corpora, models, similarities, matutils
 import matplotlib.pyplot as plt
 
 # add additional stop words
-additional_stop_words = ['like', 'said', 'would', 'could', 'should', 'one']
-my_stop_words = stop_words.union(additional_stop_words)
-# name_words = ['kaladin', 'kal', 'dalinar', 'adolin', 'shallan', 'venli', 'eshonai', 'raboniel', 'navani', 'teft', 'rock', 'rlain', 'szeth', 'taravangian', 'lirin', 'jasnah', 'veil']
-# my_stop_words = my_stop_words.union(name_words)
+additional_stop_words = ['like', 'said', 'would', 'could', 'should', 'one', 'room']
+default_stop_words = stop_words.union(additional_stop_words)
+
+name_words = ['kaladin', 'kal', 'dalinar', 'adolin', 'shallan', 'venli', 'eshonai', 'raboniel', 'navani', 'teft', 'rock', 'rlain', 'szeth', 'taravangian', 'lirin', 'jasnah', 'veil',
+              'pattern', 'syl', 'sylphrena', 'mraiz', 'kabsal', 'yalb', 'balat', 'jushu', 'wikim', 'helaran', 'malis', 'tyn', 'gaz', 'vathah', 'macob', 'tvlakv', 'bluth', 'tag',
+              'ialai', 'amaram', 'eylita', 'ishnah', 'grund', 'elhokar', 'gavilar', 'mishim', 'iyatil', 'sebari', 'sadea', 'renarin', 'palona', 'tsa', 'wit', 'moash', 'dabbid', 'lopen',
+              'leshwi', 'beryl', 'azur', 'roshon', 'tien', 'hesina', 'laral', 'zahel', 'sigzil', 'lamaril', 'skar', 'fen', 'aladar', 'tanalan', 'evi', 'yanagawn', 'mink', 'ishar',
+              'nohadon', 'ruthar', 'kadash', 'noura', 'jaxlim', 'timbr', 'ulim', 'demid', 'nale', 'thude', 'jakamav', 'kelek', 'sekeir', 'notum', 'maya', 'godek', 'sibl', 'teoﬁl',
+              'falilar', 'kalami', 'geranid', 'ashir', 'sja', 'anat', 'nin', 'rysn', 'chiri', 'vstim', 'talik', 'adrotagia', 'mrall', 'dukar', 'wyndl', 'lift', 'gawx']
 
 
 # get counts and remove stop words
-def vectorizeText(inputText, min_df=1, max_df=1.0):
-    cv = CountVectorizer(stop_words=my_stop_words, min_df=min_df, max_df=max_df)
+def vectorizeText(inputText, min_df=1, max_df=1.0, dropNameWords=False):
+    these_stop_words = default_stop_words
+    if dropNameWords: these_stop_words = these_stop_words.union(name_words)
+    
+    cv = CountVectorizer(stop_words=these_stop_words, min_df=min_df, max_df=max_df)
     X = cv.fit_transform(inputText)
     
     return X, cv
 
 # get tf-idfs and remove stop words
-def vectorizeTextIDF(inputText, min_df=1, max_df=1.0):
-    cv_tfidf = TfidfVectorizer(stop_words=my_stop_words, min_df=min_df, max_df=max_df)
+def vectorizeTextIDF(inputText, min_df=1, max_df=1.0, dropNameWords=False):
+    these_stop_words = default_stop_words
+    if dropNameWords: these_stop_words = these_stop_words.union(name_words) 
+        
+#     print(these_stop_words)
+    
+    cv_tfidf = TfidfVectorizer(stop_words=these_stop_words, min_df=min_df, max_df=max_df)
     X_tfidf = cv_tfidf.fit_transform(inputText)
     
     return X_tfidf, cv_tfidf
 
 def doNMF(numTopics, vectorized_matrix, vectorizer):
     
-    nmf_model = NMF(numTopics, random_state=84597)
+    nmf_model = NMF(numTopics, max_iter=300, random_state=84597)
     doc_topic_matrix = nmf_model.fit_transform(vectorized_matrix)
 
     topic_word_matrix = nmf_model.components_
