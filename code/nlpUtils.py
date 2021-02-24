@@ -17,7 +17,10 @@ from gensim import corpora, models, similarities, matutils
 import matplotlib.pyplot as plt
 
 # add additional stop words
-additional_stop_words = ['like', 'said', 'would', 'could', 'should', 'one', 'room']
+# additional_stop_words = ['', 'like', 'said', 'would', 'could', 'should', 'room', 'one']
+additional_stop_words = ['', 'like', 'said', 'would', 'could', 'should', 'room', 'one', 'two', 'three', 'four', 'five', 'woman', 'man', 'look', 'know', 'think', 'want', 'go', 'us', 
+                         'thing', 'get']
+
 default_stop_words = stop_words.union(additional_stop_words)
 
 name_words = ['kaladin', 'kal', 'dalinar', 'adolin', 'shallan', 'venli', 'eshonai', 'raboniel', 'navani', 'teft', 'rock', 'rlain', 'szeth', 'taravangian', 'lirin', 'jasnah', 'veil',
@@ -25,7 +28,8 @@ name_words = ['kaladin', 'kal', 'dalinar', 'adolin', 'shallan', 'venli', 'eshona
               'ialai', 'amaram', 'eylita', 'ishnah', 'grund', 'elhokar', 'gavilar', 'mishim', 'iyatil', 'sebari', 'sadea', 'renarin', 'palona', 'tsa', 'wit', 'moash', 'dabbid', 'lopen',
               'leshwi', 'beryl', 'azur', 'roshon', 'tien', 'hesina', 'laral', 'zahel', 'sigzil', 'lamaril', 'skar', 'fen', 'aladar', 'tanalan', 'evi', 'yanagawn', 'mink', 'ishar',
               'nohadon', 'ruthar', 'kadash', 'noura', 'jaxlim', 'timbr', 'ulim', 'demid', 'nale', 'thude', 'jakamav', 'kelek', 'sekeir', 'notum', 'maya', 'godek', 'sibl', 'teoﬁl',
-              'falilar', 'kalami', 'geranid', 'ashir', 'sja', 'anat', 'nin', 'rysn', 'chiri', 'vstim', 'talik', 'adrotagia', 'mrall', 'dukar', 'wyndl', 'lift', 'gawx']
+              'falilar', 'kalami', 'geranid', 'ashir', 'sja', 'anat', 'nin', 'rysn', 'chiri', 'vstim', 'talik', 'adrotagia', 'mrall', 'dukar', 'wyndl', 'lift', 'gawx', 'davim',
+              'cenn', 'dallet', 'roion', 'nimi', 'hobber', 'lunamor', 'shumin', 'jesevan']
 
 
 # get counts and remove stop words
@@ -71,7 +75,7 @@ def getNMF_TopicWord_Dicts(topic_word_matrix, vectorizer):
     
 def doNMF(numTopics, vectorized_matrix, vectorizer):
     
-    nmf_model = NMF(numTopics, max_iter=300, random_state=84597)
+    nmf_model = NMF(numTopics, max_iter=500, random_state=84597)
     doc_topic_matrix = nmf_model.fit_transform(vectorized_matrix)
 
     topic_word_matrix = nmf_model.components_

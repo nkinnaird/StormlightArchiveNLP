@@ -39,7 +39,11 @@ def getClusterCounts(df_with_results, top_words, bookNum):
     else:
         plt.title(f"Book {bookNum} kMeans")
 
-    plt.ylabel("Number of Chapters")
+    if len(df_with_results.index) < 500:
+        plt.ylabel("Number of Chapters")
+    else:
+        plt.ylabel("Number of Pages")
+           
     plt.xlabel("Character Cluster")
 
     plt.show()
@@ -60,8 +64,12 @@ def getNMFCounts(df_with_results, top_words, bookNum):
         plt.title("All Books NMF")
     else:
         plt.title(f"Book {bookNum} NMF")
+    
+    if len(df_with_results.index) < 500:
+        plt.ylabel("Number of Chapters")
+    else:
+        plt.ylabel("Number of Pages")
         
-    plt.ylabel("Number of Chapters")
     plt.xlabel("Character Topic")
             
     plt.show()
