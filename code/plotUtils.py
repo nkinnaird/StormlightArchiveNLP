@@ -259,4 +259,72 @@ def makeWordCloudPlot(word_dict, character, subTopicNum):
     
     
     
+def makeSubtopicTrendPlots(subtopic_list_counts_filled, character, top_words):
     
+    for j, counts_data_list in enumerate(subtopic_list_counts_filled):
+        x_val = [x[0] for x in counts_data_list]
+        y_val = [x[1] for x in counts_data_list] 
+        
+        sns.lineplot(x=x_val, y=y_val)
+        
+        plt.title(f'{character}: {top_words[j]}')
+        plt.xlabel('Global Chapter Number')
+        plt.ylabel('Number of Pages')
+        
+        save_path = folder + character + 'SubtopicTrend_' + str(j) + plot_append
+        if savePlots: 
+            print('Saving image: ', save_path)
+            plt.savefig(save_path, bbox_inches='tight')  
+        
+        plt.show()
+        
+        
+def makeSubtopicJourneyPlot(subtopic_list_counts_filled, character, top_words):
+        
+    fig = plt.figure(figsize=(20, 10))
+    ax1 = fig.add_subplot(111)
+    
+    for j, counts_data_list in enumerate(subtopic_list_counts_filled):
+        x_val = [x[0] for x in counts_data_list]
+        y_val = [x[1] for x in counts_data_list] 
+        
+        subtopic_word = top_words[j]
+        
+        sns.lineplot(x=x_val, y=y_val, label=subtopic_word)
+
+        # attempts with stacking the lines
+#         if j == 0:
+#             ax1.fill_between(x_val, y_val, 0, alpha=1, label=subtopic_word)
+#         else:
+#             previous_y_val = [x[1] for x in subtopic_list_counts_filled[j-1]] 
+#             ax1.fill_between(x_val, y_val, previous_y_val, alpha=1, label=subtopic_word)
+
+    plt.legend()
+    
+    plt.title(f'{character}: Subtopic Journey')
+    plt.xlabel('Global Chapter Number')
+    plt.ylabel('Number of Pages')
+
+    save_path = folder + character + 'Journey' + plot_append
+    if savePlots: 
+        print('Saving image: ', save_path)
+        plt.savefig(save_path, bbox_inches='tight')        
+
+    plt.show()
+    
+    
+    
+def sentimentPlot(inX, inY, character):
+    
+    sns.lineplot(x=inX, y=inY)
+    
+    plt.title(f'{character}: Sentiment Journey')
+    plt.xlabel('Global Page Number')
+    plt.ylabel('Sentiment Score')
+
+    save_path = folder + character + 'SentimentJourney' + plot_append
+    if savePlots: 
+        print('Saving image: ', save_path)
+        plt.savefig(save_path, bbox_inches='tight')        
+
+    plt.show()
