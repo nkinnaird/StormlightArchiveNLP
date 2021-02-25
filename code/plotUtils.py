@@ -9,10 +9,46 @@ from sklearn.metrics.pairwise import cosine_similarity, cosine_distances
 
 from wordcloud import WordCloud
 
+params = {'legend.fontsize': 14,
+          'legend.title_fontsize': 14,
+          'figure.figsize': (8, 6),
+          'axes.labelsize': 16,
+          'axes.titlesize': 18,
+          'xtick.labelsize': 14,
+          'ytick.labelsize': 14}
+plt.rcParams.update(params)
+
+
+# connect names to colors for specific plotting
 names_to_colors = [('kaladin', "#1f77b4"), ('shallan', "#ff7f0e"), ('dalinar', "#2ca02c"), ('venli', "#d62728"), ('navani', "#9467bd"), 
                    ('adolin', "#8c564b"), ('szeth', "#e377c2"), ('veil', "#7f7f7f"), ('kal', "#bcbd22"), ('eshonai', "#17becf"),
                    ('taravangian', "#e377c2"), ('lirin', "#bcbd22")] # szeth-taravangian the same color, lirin-kal the same color
 color_dict = dict(names_to_colors)
+
+
+# variables and method for saving plots
+savePlots = False
+folder = ''
+plot_append = ''
+
+def setPlotSaveVariables(save_plots, byPage):
+    
+    global savePlots
+    global folder
+    global plot_append
+    
+    savePlots = save_plots
+    
+    if byPage: 
+        folder = './Images/ByPage/'
+        plot_append = '_ByPage.png'
+    else: 
+        folder = './Images/ByChapter/'
+        plot_append = '_ByChapter.png'
+        
+        
+    if savePlots: print('Saving plots to: ', folder, ' with suffix: ', plot_append)
+    else: print('NOT Saving plots to: ', folder, ' with suffix: ', plot_append)
 
 
 # use this function to make the colors consistent across various plots - colors will grab by index from the default colors
@@ -46,6 +82,13 @@ def getClusterCounts(df_with_results, top_words, bookNum):
            
     plt.xlabel("Character Cluster")
 
+    if bookNum == 0: save_path = folder + 'kMeans_AllBooks' + plot_append
+    else: save_path = folder + f'kMeans_Book{bookNum}' + plot_append
+        
+    if savePlots: 
+        print('Saving image: ', save_path)
+        plt.savefig(save_path)  
+    
     plt.show()
     
     
@@ -71,33 +114,15 @@ def getNMFCounts(df_with_results, top_words, bookNum):
         plt.ylabel("Number of Pages")
         
     plt.xlabel("Character Topic")
-            
-    plt.show()
-    
-    
-    
-# # plot number of counts in each topic (max value) against booknum - this function without the NMF top topic columns in the dataframe
-# def getNMFCounts(df_with_results, top_words, bookNum):
-    
-#     xs = [np.asarray(values).argmax() for values in df_with_results['NMF']]
-#     xs.sort()
-    
-#     labels = [top_words[item] for item in set(xs)]
 
-#     fig, ax = plt.subplots()        
-#     sns.countplot(x=xs, palette=getPalette(labels))
+    if bookNum == 0: save_path = folder + 'NMF_AllBooks' + plot_append
+    else: save_path = folder + f'NMF_Book{bookNum}' + plot_append
         
-#     ax.set_xticklabels(labels)
+    if savePlots: 
+        print('Saving image: ', save_path)
+        plt.savefig(save_path)     
     
-#     if bookNum == 0:
-#         plt.title("All Books NMF")
-#     else:
-#         plt.title(f"Book {bookNum} NMF")
-        
-#     plt.ylabel("Number of Chapters")
-#     plt.xlabel("Character Topic")
-            
-#     plt.show()
+    plt.show()
     
 
 # make MDS plot using vectorized matrix directly
@@ -118,6 +143,12 @@ def makeMDSPlot(vectorized_matrix, df_with_results, top_words):
     sns.lmplot(x='MDS Axis 1', y='MDS Axis 2', data=df_temp.sort_values(by='Cluster'), hue='Label', palette=getPalette(labels), fit_reg=False)
 
     plt.title("MDS All Books kMeans")
+    
+    save_path = folder + 'kMeans_MDS' + plot_append    
+    if savePlots: 
+        print('Saving image: ', save_path)
+        plt.savefig(save_path, bbox_inches='tight')  
+    
     plt.show()
     
 
@@ -139,6 +170,12 @@ def makeTSNEPlot(vectorized_matrix, df_with_results, top_words, inputPerplexity=
     sns.lmplot(x='tSNE Axis 1', y='tSNE Axis 2', data=df_tsne.sort_values(by='Cluster'), hue='Label', palette=getPalette(labels), fit_reg=False)
 
     plt.title("tSNE All Books kMeans")
+    
+    save_path = folder + 'kMeans_tSNE' + plot_append    
+    if savePlots: 
+        print('Saving image: ', save_path)
+        plt.savefig(save_path, bbox_inches='tight')
+    
     plt.show()
     
 
@@ -161,11 +198,17 @@ def makeTSNEPlotFromNMF(vectorized_matrix, df_with_results, top_words, inputPerp
     sns.lmplot(x='tSNE Axis 1', y='tSNE Axis 2', data=df_tsne.sort_values(by='Topic'), hue='Label', palette=getPalette(labels), fit_reg=False)
 
     plt.title("tSNE All Books NMF")
+    
+    save_path = folder + 'NMF_tSNE' + plot_append    
+    if savePlots: 
+        print('Saving image: ', save_path)
+        plt.savefig(save_path, bbox_inches='tight')      
+        
     plt.show()
     
     
 # make word cloud plot from NMF results
-def makeWordCloudPlot(word_dict):
+def makeWordCloudPlot(word_dict, character, subTopicNum):
     
     wc = WordCloud(background_color="white", max_words=100)#, mask=alice_mask)
     
@@ -173,6 +216,12 @@ def makeWordCloudPlot(word_dict):
 
     plt.imshow(wc, interpolation="bilinear")
     plt.axis("off")
+    
+    save_path = folder + 'NMF_WordCloud_' + character + '_' + str(subTopicNum) + plot_append    
+    if savePlots: 
+        print('Saving image: ', save_path)
+        plt.savefig(save_path)  
+    
     plt.show()
     
     

@@ -46,9 +46,7 @@ def vectorizeText(inputText, min_df=1, max_df=1.0, dropNameWords=False):
 def vectorizeTextIDF(inputText, min_df=1, max_df=1.0, dropNameWords=False):
     these_stop_words = default_stop_words
     if dropNameWords: these_stop_words = these_stop_words.union(name_words) 
-        
-#     print(these_stop_words)
-    
+            
     cv_tfidf = TfidfVectorizer(stop_words=these_stop_words, min_df=min_df, max_df=max_df)
     X_tfidf = cv_tfidf.fit_transform(inputText)
     
@@ -80,10 +78,6 @@ def doNMF(numTopics, vectorized_matrix, vectorizer):
 
     topic_word_matrix = nmf_model.components_
     top_word_ids = topic_word_matrix.argsort(axis=1)[:,-1:-7:-1]
-    
-#     print(type(topic_word_matrix))
-#     print(topic_word_matrix.shape)
-#     print(topic_word_matrix)
 
     words = vectorizer.get_feature_names()
     top_topic_words = [[words[word_id] for word_id in topicNum] for topicNum in top_word_ids]
