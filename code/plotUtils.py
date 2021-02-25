@@ -124,6 +124,39 @@ def getNMFCounts(df_with_results, top_words, bookNum):
     
     plt.show()
     
+    
+# plot number of counts in each topic (max value) against booknum, for subtopic NMF results
+def getNMFCounts_SubTopic(df_with_results, top_words, bookNum):
+
+    unique_topic_values = df_with_results['NMF_SubTopic_Top_Topic'].sort_values().unique()
+    labels = [top_words[item] for item in unique_topic_values]
+
+    fig, ax = plt.subplots()        
+    sns.countplot(x='NMF_SubTopic_Top_Topic', data=df_with_results.sort_values(by='NMF_SubTopic_Top_Topic'))#, palette=getPalette(labels)) # sort NMF top topic column by value in order to plot names and colors consistently
+        
+    ax.set_xticklabels(labels)
+    
+    if bookNum == 0:
+        plt.title("All Books NMF")
+    else:
+        plt.title(f"Book {bookNum} NMF")
+    
+    if len(df_with_results.index) < 500:
+        plt.ylabel("Number of Chapters")
+    else:
+        plt.ylabel("Number of Pages")
+        
+    plt.xlabel("Sub Topic")
+
+    if bookNum == 0: save_path = folder + 'NMF_AllBooks' + plot_append
+    else: save_path = folder + f'NMF_Book{bookNum}' + plot_append
+        
+    if savePlots: 
+        print('Saving image: ', save_path)
+        plt.savefig(save_path)     
+    
+    plt.show()    
+    
 
 # make MDS plot using vectorized matrix directly
 def makeMDSPlot(vectorized_matrix, df_with_results, top_words):
