@@ -17,7 +17,6 @@ from gensim import corpora, models, similarities, matutils
 import matplotlib.pyplot as plt
 
 # add additional stop words
-# additional_stop_words = ['', 'like', 'said', 'would', 'could', 'should', 'room', 'one']
 additional_stop_words = ['', 'like', 'said', 'would', 'could', 'should', 'room', 'one', 'two', 'three', 'four', 'five', 'woman', 'man', 'look', 'know', 'think', 'want', 'go', 'us', 
                          'thing', 'get', 'part']
 

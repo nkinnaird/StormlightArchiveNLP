@@ -258,7 +258,7 @@ def makeWordCloudPlot(word_dict, character, subTopicNum):
     plt.show()
     
     
-    
+# make trend of subtopic counts for a single subtopic and character    
 def makeSubtopicTrendPlots(subtopic_list_counts_filled, character, top_words):
     
     for j, counts_data_list in enumerate(subtopic_list_counts_filled):
@@ -278,7 +278,7 @@ def makeSubtopicTrendPlots(subtopic_list_counts_filled, character, top_words):
         
         plt.show()
         
-        
+# make trend of subtopic counts for a single character with all subtopics           
 def makeSubtopicJourneyPlot(subtopic_list_counts_filled, character, top_words):
         
     fig = plt.figure(figsize=(20, 10))
@@ -313,7 +313,7 @@ def makeSubtopicJourneyPlot(subtopic_list_counts_filled, character, top_words):
     plt.show()
     
     
-    
+# make plot of sentiment trend
 def sentimentPlot(inX, inY, character):
     
     sns.lineplot(x=inX, y=inY)
